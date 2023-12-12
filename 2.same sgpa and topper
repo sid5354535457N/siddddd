@@ -1,0 +1,98 @@
+/*  2 Consider a student database of SEIT class (at least 15 records). Database contains
+different fields of every student like Roll No, Name and SGPA.(array of structure)
+a) Search students according to SGPA. If more than one student having same
+SGPA, then print list of all students having same SGPA.
+b) Arrange list of students to find out first ten toppers from a class. (Use Quick
+sort)
+(Note: Implement either Bubble sort or Insertion Sort.) */ 
+
+#include <iostream>
+using namespace std;
+
+struct Student {
+    int rollNo;
+    char name[50];
+    float sgpa;
+};
+
+int partition(Student arr[], int low, int high);
+
+void quickSort(Student arr[], int low, int high);
+
+void searchBySGPA(Student arr[], int n, float targetSGPA);
+
+int main() {
+    // Example data with at least 15 records
+    Student students[] = {
+        {101, "Alice", 8.5},
+        {102, "Bob", 9.0},
+        {103, "Charlie", 8.5},
+        {104, "David", 9.0},
+        // Add more records here
+        {115, "Eve", 7.8}
+    };
+
+    int n = sizeof(students) / sizeof(students[0]);
+
+    float targetSGPA = 8.5;
+    searchBySGPA(students, n, targetSGPA);
+
+    quickSort(students, 0, n - 1);
+
+    cout << "\nTop 10 Toppers (Sorted by SGPA):\n";
+    for (int i = 0; i < 10 && i < n; i++) {
+        cout << "Roll No: " << students[i].rollNo << ", Name: " << students[i].name << ", SGPA: " << students[i].sgpa << endl;
+    }
+
+    return 0;
+}
+
+int partition(Student arr[], int low, int high) {
+    float pivot = arr[high].sgpa;
+    int i = (low - 1);
+
+    for (int j = low; j <= high - 1; j++) {
+        if (arr[j].sgpa >= pivot) {
+            swap(arr[i + 1], arr[j]);
+            i++;
+        }
+    }
+
+    swap(arr[i + 1], arr[high]);
+    return (i + 1);
+}
+
+void quickSort(Student arr[], int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+
+void searchBySGPA(Student arr[], int n, float targetSGPA) {
+    int found = 0;
+
+    cout << "\nStudents with SGPA " << targetSGPA << ":\n";
+
+    for (int i = 0; i < n; i++) {
+        if (arr[i].sgpa == targetSGPA) {
+            cout << "Roll No: " << arr[i].rollNo << ", Name: " << arr[i].name << ", SGPA: " << arr[i].sgpa << endl;
+            found = 1;
+        }
+    }
+
+    if (!found) {
+        cout << "No students found with SGPA " << targetSGPA << endl;
+    } else {
+        cout << "\nOther students with the same SGPA:\n";
+        for (int i = 0; i < n; i++) {
+            if (arr[i].sgpa != targetSGPA) {
+                continue;
+            }
+
+            cout << "Roll No: " << arr[i].rollNo << ", Name: " << arr[i].name << ", SGPA: " << arr[i].sgpa << endl;
+        }
+    }
+}

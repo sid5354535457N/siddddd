@@ -1,0 +1,195 @@
+/* 11 Implement binary search tree and perform following operations:
+a) Insert (Handle insertion of duplicate entry)
+b) Delete
+c) Search
+d) Display tree (Traversal)
+e) Create a copy
+f) Display all parent nodes with their child nodes  */
+#include <iostream>
+#include <queue>
+#include <stack>
+
+using namespace std;
+
+class TreeNode {
+public:
+    int data;
+    TreeNode* left;
+    TreeNode* right;
+
+    TreeNode(int value) : data(value), left(nullptr), right(nullptr) {}
+};
+
+class BinarySearchTree {
+private:
+    TreeNode* root;
+
+    TreeNode* insertRecursive(TreeNode* node, int key) {
+        if (node == nullptr) {
+            return new TreeNode(key);
+        }
+
+        if (key < node->data) {
+            node->left = insertRecursive(node->left, key);
+        } else if (key > node->data) {
+            node->right = insertRecursive(node->right, key);
+        } else {
+        }
+
+        return node;
+    }
+
+    TreeNode* findMin(TreeNode* node) {
+        while (node->left != nullptr) {
+            node = node->left;
+        }
+        return node;
+    }
+
+    TreeNode* deleteNode(TreeNode* node, int key) {
+        if (node == nullptr) {
+            return nullptr;
+        }
+
+        if (key < node->data) {
+            node->left = deleteNode(node->left, key);
+        } else if (key > node->data) {
+            node->right = deleteNode(node->right, key);
+        } else {
+            if (node->left == nullptr) {
+                TreeNode* temp = node->right;
+                delete node;
+                return temp;
+            } else if (node->right == nullptr) {
+                TreeNode* temp = node->left;
+                delete node;
+                return temp;
+            }
+
+            TreeNode* temp = findMin(node->right);
+
+            node->data = temp->data;
+
+            node->right = deleteNode(node->right, temp->data);
+        }
+
+        return node;
+    }
+
+    TreeNode* searchRecursive(TreeNode* node, int key) {
+        if (node == nullptr || node->data == key) {
+            return node;
+        }
+
+        if (key < node->data) {
+            return searchRecursive(node->left, key);
+        }
+
+        return searchRecursive(node->right, key);
+    }
+
+    TreeNode* copyTree(TreeNode* node) {
+        if (node == nullptr) {
+            return nullptr;
+        }
+
+        TreeNode* newNode = new TreeNode(node->data);
+        newNode->left = copyTree(node->left);
+        newNode->right = copyTree(node->right);
+
+        return newNode;
+    }
+
+    void inOrderTraversal(TreeNode* node) {
+        if (node != nullptr) {
+            inOrderTraversal(node->left);
+            cout << node->data << " ";
+            inOrderTraversal(node->right);
+        }
+    }
+
+    void displayParentChildNodes(TreeNode* node) {
+        if (node == nullptr) {
+            return;
+        }
+
+        if (node->left != nullptr) {
+            cout << "Parent: " << node->data << " - Left Child: " << node->left->data << endl;
+            displayParentChildNodes(node->left);
+        }
+
+        if (node->right != nullptr) {
+            cout << "Parent: " << node->data << " - Right Child: " << node->right->data << endl;
+            displayParentChildNodes(node->right);
+        }
+    }
+
+public:
+    BinarySearchTree() : root(nullptr) {}
+
+    void insert(int key) {
+        root = insertRecursive(root, key);
+    }
+
+    void remove(int key) {
+        root = deleteNode(root, key);
+    }
+
+    bool search(int key) {
+        return searchRecursive(root, key) != nullptr;
+    }
+
+    BinarySearchTree createCopy() {
+        BinarySearchTree copyTree;
+        copyTree.root = copyTree.copyTree(root);
+        return copyTree;
+    }
+
+    void displayTree() {
+        cout << "In-order Traversal: ";
+        inOrderTraversal(root);
+        cout << endl;
+    }
+
+    void displayParentChildNodes() {
+        cout << "Parent-Child Relationships:" << endl;
+        displayParentChildNodes(root);
+    }
+};
+
+int main() {
+    BinarySearchTree bst;
+
+    bst.insert(50);
+    bst.insert(30);
+    bst.insert(70);
+    bst.insert(20);
+    bst.insert(40);
+    bst.insert(60);
+    bst.insert(80);
+
+    cout << "Original BST:" << endl;
+    bst.displayTree();
+
+    int keyToSearch = 40;
+    cout << "Searching for " << keyToSearch << ": ";
+    if (bst.search(keyToSearch)) {
+        cout << "Found" << endl;
+    } else {
+        cout << "Not Found" << endl;
+    }
+
+    cout << "Creating a copy of the BST:" << endl;
+    BinarySearchTree copyBST = bst.createCopy();
+    copyBST.displayTree();
+
+    int keyToDelete = 30;
+    bst.remove(keyToDelete);
+    cout << "BST after deleting " << keyToDelete << ":" << endl;
+    bst.displayTree();
+
+    cout << "Parent-Child Relationships of the original BST:" << endl;
+    bst.displayParentChildNodes();
+
+    return 0;
+}

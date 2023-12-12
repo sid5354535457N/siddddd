@@ -1,0 +1,141 @@
+/*   19 Department maintains student’s database. The file contains roll number, name,
+division and address. Write a program to create a sequential file to store and maintain
+student data. It should allow the user to add, delete information of student. Display
+information of particular student. If record of student does not exist an appropriate
+message is displayed. If student record is found it should display the student details.          */
+#include <iostream>
+
+using namespace std;
+
+const int MAX_STUDENTS = 100;  // Maximum number of students
+
+struct Student {
+    int rollNumber;
+    string name;
+    char division;
+    string address;
+};
+
+// Function to add a new student record
+void addStudent(Student students[], int& numStudents) {
+    if (numStudents < MAX_STUDENTS) {
+        Student student;
+
+        cout << "Enter Roll Number: ";
+        cin >> student.rollNumber;
+
+        cout << "Enter Name: ";
+        cin.ignore(); // Clear input buffer
+        getline(cin, student.name);
+
+        cout << "Enter Division: ";
+        cin >> student.division;
+
+        cout << "Enter Address: ";
+        cin.ignore(); // Clear input buffer
+        getline(cin, student.address);
+
+        students[numStudents++] = student;
+        cout << "Student added successfully!" << endl;
+    } else {
+        cout << "Maximum number of students reached. Cannot add more." << endl;
+    }
+}
+
+// Function to delete a student record
+void deleteStudent(Student students[], int& numStudents, int rollNumberToDelete) {
+    bool found = false;
+
+    for (int i = 0; i < numStudents; ++i) {
+        if (students[i].rollNumber == rollNumberToDelete) {
+            found = true;
+            cout << "Student Found:" << endl;
+            cout << "Roll Number: " << students[i].rollNumber << endl;
+            cout << "Name: " << students[i].name << endl;
+            cout << "Division: " << students[i].division << endl;
+            cout << "Address: " << students[i].address << endl;
+
+            // Shift elements to fill the gap
+            for (int j = i; j < numStudents - 1; ++j) {
+                students[j] = students[j + 1];
+            }
+
+            --numStudents;
+            cout << "Student record deleted successfully!" << endl;
+            break;
+        }
+    }
+
+    if (!found) {
+        cout << "Student with Roll Number " << rollNumberToDelete << " not found." << endl;
+    }
+}
+
+// Function to display information of a particular student
+void displayStudent(const Student students[], int numStudents, int rollNumberToFind) {
+    bool found = false;
+
+    for (int i = 0; i < numStudents; ++i) {
+        if (students[i].rollNumber == rollNumberToFind) {
+            found = true;
+            cout << "Student Found:" << endl;
+            cout << "Roll Number: " << students[i].rollNumber << endl;
+            cout << "Name: " << students[i].name << endl;
+            cout << "Division: " << students[i].division << endl;
+            cout << "Address: " << students[i].address << endl;
+            break;
+        }
+    }
+
+    if (!found) {
+        cout << "Student with Roll Number " << rollNumberToFind << " not found." << endl;
+    }
+}
+
+int main() {
+    Student students[MAX_STUDENTS];
+    int numStudents = 0;
+
+    int choice;
+    do {
+        cout << "\n***** Student Database Management *****" << endl;
+        cout << "1. Add Student\n2. Delete Student\n3. Display Student\n4. Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                addStudent(students, numStudents);
+                break;
+
+            case 2:
+                {
+                    int rollNumberToDelete;
+                    cout << "Enter Roll Number to delete: ";
+                    cin >> rollNumberToDelete;
+
+                    deleteStudent(students, numStudents, rollNumberToDelete);
+                }
+                break;
+
+            case 3:
+                {
+                    int rollNumberToFind;
+                    cout << "Enter Roll Number to display: ";
+                    cin >> rollNumberToFind;
+
+                    displayStudent(students, numStudents, rollNumberToFind);
+                }
+                break;
+
+            case 4:
+                cout << "Exiting program." << endl;
+                break;
+
+            default:
+                cout << "Invalid choice. Please enter a valid option." << endl;
+        }
+    } while (choice != 4);
+
+    return 0;
+}

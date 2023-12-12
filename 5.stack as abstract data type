@@ -1,0 +1,141 @@
+/*5 Implement stack as an abstract data type using singly linked list and use this ADT
+for evaluation of postfix and prefix expression.*/
+#include <iostream>
+#include <cstring>
+
+using namespace std;
+
+// Node structure 
+struct Node {
+    float data;
+    Node* next;
+
+    Node(float val) : data(val), next(nullptr) {}
+};
+
+
+class Stack {
+private:
+    Node* top;
+
+public:
+    Stack() : top(nullptr) {}
+
+    k
+    void push(float val) {
+        Node* newNode = new Node(val);
+        newNode->next = top;
+        top = newNode;
+    }
+
+   
+    float pop() {
+        if (isEmpty()) {
+            cerr << "Error: Stack underflow\n";
+            return 0.0; 
+        }
+
+        Node* temp = top;
+        float poppedData = temp->data;
+        top = temp->next;
+        delete temp;
+
+        return poppedData;
+    }
+
+    bool isEmpty() const {
+        return top == nullptr;
+    }
+
+    float getTop() const {
+        return isEmpty() ? 0.0 : top->data;
+    }
+
+    ~Stack() {
+        while (!isEmpty()) {
+            pop();
+        }
+    }
+};
+
+float evaluatePostfix(const char* postfix) {
+    Stack stack;
+
+    for (int i = 0; i < strlen(postfix); i++) {
+        if (isdigit(postfix[i])) {
+            stack.push(static_cast<float>(postfix[i] - '0'));
+        } else {
+            float operand2 = stack.pop();
+            float operand1 = stack.pop();
+
+            switch (postfix[i]) {
+                case '+':
+                    stack.push(operand1 + operand2);
+                    break;
+                case '-':
+                    stack.push(operand1 - operand2);
+                    break;
+                case '*':
+                    stack.push(operand1 * operand2);
+                    break;
+                case '/':
+                    stack.push(operand1 / operand2);
+                    break;
+                default:
+                    cerr << "Error: Invalid postfix expression\n";
+                    return 0.0;
+            }
+        }
+    }
+
+    return stack.pop();
+}
+
+float evaluatePrefix(const char* prefix) {
+    Stack stack;
+
+    for (int i = strlen(prefix) - 1; i >= 0; i--) {
+        if (isdigit(prefix[i])) {
+            stack.push(static_cast<float>(prefix[i] - '0'));
+        } else {
+            float operand1 = stack.pop();
+            float operand2 = stack.pop();
+
+            switch (prefix[i]) {
+                case '+':
+                    stack.push(operand1 + operand2);
+                    break;
+                case '-':
+                    stack.push(operand1 - operand2);
+                    break;
+                case '*':
+                    stack.push(operand1 * operand2);
+                    break;
+                case '/':
+                    stack.push(operand1 / operand2);
+                    break;
+                default:
+                    cerr << "Error: Invalid prefix expression\n";
+                    return 0.0;
+            }
+        }
+    }
+
+    return stack.pop();
+}
+
+int main() {
+    // Example postfix and prefix expressions
+    const char* postfixExpression = "3*5+";
+    const char* prefixExpression = "+*35";
+
+    // Evaluate postfix expression
+    float resultPostfix = evaluatePostfix(postfixExpression);
+    cout << "Result of postfix expression: " << resultPostfix << endl;
+
+    // Evaluate prefix expression
+    float resultPrefix = evaluatePrefix(prefixExpression);
+    cout << "Result of prefix expression: " << resultPrefix << endl;
+
+    return 0;
+}

@@ -1,0 +1,141 @@
+/* 4  Implement stack as an abstract data type using singly linked list and use this ADT
+for conversion of infix expression to postfix, prefix expression.*/
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// Node structure
+struct Node {
+    char data;
+    Node* next;
+
+    Node(char val) : data(val), next(nullptr) {}
+};
+
+class Stack {
+private:
+    Node* top;
+
+public:
+    Stack() : top(nullptr) {}
+
+    void push(char val) {
+        Node* newNode = new Node(val);
+        newNode->next = top;
+        top = newNode;
+    }
+
+    char pop() {
+        if (isEmpty()) {
+            cerr << "Error: Stack underflow\n";
+            return '\0';
+        }
+
+        Node* temp = top;
+        char poppedData = temp->data;
+        top = temp->next;
+        delete temp;
+
+        return poppedData;
+    }
+
+    bool isEmpty() const {
+        return top == nullptr;
+    }
+
+    char getTop() const {
+        return isEmpty() ? '\0' : top->data;
+    }
+
+    ~Stack() {
+        while (!isEmpty()) {
+            pop();
+        }
+    }
+};
+
+bool isOperand(char c) {
+    return (isalpha(c) || isdigit(c));
+}
+
+int getPrecedence(char op) {
+    switch (op) {
+        case '^':
+            return 3;
+        case '*':
+        case '/':
+            return 2;
+        case '+':
+        case '-':
+            return 1;
+        default:
+            return -1;
+    }
+}
+
+// Function to convert infix expression to postfix expression
+string infixToPostfix(const string& infix) {
+    string postfix;
+    Stack stack;
+
+    for (char c : infix) {
+        if (isOperand(c)) {
+            postfix += c;
+        } else if (c == '(') {
+            stack.push(c);
+        } else if (c == ')') {
+            while (!stack.isEmpty() && stack.getTop() != '(') {
+                postfix += stack.pop();
+            }
+            stack.pop();
+        } else {
+            while (!stack.isEmpty() && getPrecedence(c) <= getPrecedence(stack.getTop())) {
+                postfix += stack.pop();
+            }
+            stack.push(c);
+        }
+    }
+
+    while (!stack.isEmpty()) {
+        postfix += stack.pop();
+    }
+
+    return postfix;
+}
+
+string customReverse(const string& str) {
+    string reversedStr = str;
+    int start = 0;
+    int end = reversedStr.length() - 1;
+
+    while (start < end) {
+        swap(reversedStr[start], reversedStr[end]);
+        start++;
+        end--;
+    }
+
+    return reversedStr;
+}
+
+string infixToPrefix(const string& infix) {
+    string postfix = infixToPostfix(infix);
+
+    string prefixExpression = customReverse(postfix);
+
+    return prefixExpression;
+}
+
+int main() {
+    string infixExpression;
+    cout << "Enter an infix expression: ";
+    getline(cin, infixExpression);
+
+    string postfixExpression = infixToPostfix(infixExpression);
+    string prefixExpression = infixToPrefix(infixExpression);
+
+    cout << "Postfix expression: " << postfixExpression << endl;
+    cout << "Prefix expression: " << prefixExpression << endl;
+
+    return 0;
+}

@@ -1,0 +1,130 @@
+/*7. Construct an Expression Tree from postfix expression. Perform recursive and non-
+recursive In-order, pre-order traversals.*/
+#include <iostream>
+#include <stack>
+
+using namespace std;
+
+class TreeNode {
+public:
+    char data;
+    TreeNode* left;
+    TreeNode* right;
+
+    TreeNode(char value) : data(value), left(nullptr), right(nullptr) {}
+};
+
+class ExpressionTree {
+private:
+    TreeNode* root;
+
+    bool isOperator(char c) {
+        return (c == '+' || c == '-' || c == '*' || c == '/');
+    }
+
+public:
+    ExpressionTree() : root(nullptr) {}
+
+    void buildTree(const string& postfix) {
+        stack<TreeNode*> st;
+
+        for (char c : postfix) {
+            TreeNode* newNode = new TreeNode(c);
+
+            if (!isOperator(c)) {
+                st.push(newNode);
+            } else {
+                newNode->right = st.top();
+                st.pop();
+                newNode->left = st.top();
+                st.pop();
+                st.push(newNode);
+            }
+        }
+
+        root = st.top();
+    }
+
+    TreeNode* getRoot() {
+        return root;
+    }
+
+    void recursiveInOrder(TreeNode* node) {
+        if (node) {
+            recursiveInOrder(node->left);
+            cout << node->data << " ";
+            recursiveInOrder(node->right);
+        }
+    }
+
+    void recursivePreOrder(TreeNode* node) {
+        if (node) {
+            cout << node->data << " ";
+            recursivePreOrder(node->left);
+            recursivePreOrder(node->right);
+        }
+    }
+
+    void nonRecursiveInOrder() {
+        stack<TreeNode*> st;
+        TreeNode* current = root;
+
+        while (current || !st.empty()) {
+            while (current) {
+                st.push(current);
+                current = current->left;
+            }
+
+            current = st.top();
+            st.pop();
+
+            cout << current->data << " ";
+
+            current = current->right;
+        }
+    }
+
+    void nonRecursivePreOrder() {
+        if (!root) return;
+
+        stack<TreeNode*> st;
+        st.push(root);
+
+        while (!st.empty()) {
+            TreeNode* current = st.top();
+            st.pop();
+
+            cout << current->data << " ";
+
+            if (current->right) st.push(current->right);
+            if (current->left) st.push(current->left);
+        }
+    }
+};
+
+int main() {
+    ExpressionTree tree;
+
+    // Example postfix expression: "ab+c*"
+    string postfixExpression = "ab+c*";
+
+    tree.buildTree(postfixExpression);
+
+    cout << "Recursive In-order traversal: ";
+    tree.recursiveInOrder(tree.getRoot());
+    cout << endl;
+
+    cout << "Recursive Pre-order traversal: ";
+    tree.recursivePreOrder(tree.getRoot());
+    cout << endl;
+
+    cout << "Non-recursive In-order traversal: ";
+    tree.nonRecursiveInOrder();
+    cout << endl;
+
+    cout << "Non-recursive Pre-order traversal: ";
+    tree.nonRecursivePreOrder();
+    cout << endl;
+
+    return 0;
+}

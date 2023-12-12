@@ -1,0 +1,86 @@
+/*  1. Consider a student database of SEIT class (at least 15 records). Database contains
+different fields of every student like Roll No, Name and SGPA.(array of structure)
+a) Design a roll call list, arrange list of students according to roll numbers in
+ascending order (Use Bubble Sort)
+b) Arrange list of students to find out first ten toppers from a class. (Use Quick
+sort)*/
+#include <iostream>
+
+using namespace std;
+
+struct Student {
+    int rollNo;
+    string name;
+    float sgpa;
+};
+
+int partition(Student arr[], int low, int high);
+
+void bubbleSort(Student arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (arr[j].rollNo > arr[j + 1].rollNo) {
+                // Swap the students
+                Student temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void quickSort(Student arr[], int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+
+int partition(Student arr[], int low, int high) {
+    float pivot = arr[high].sgpa;
+    int i = (low - 1);
+
+    for (int j = low; j <= high - 1; j++) {
+        if (arr[j].sgpa >= pivot) {
+            i++;
+            // Swap the students
+            Student temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+    }
+
+    Student temp = arr[i + 1];
+    arr[i + 1] = arr[high];
+    arr[high] = temp;
+
+    return (i + 1);
+}
+
+int main() {
+    const int numStudents = 3;
+    Student students[numStudents] = {
+        {101, "Alice", 8.5},
+        {102, "Bob", 9.0},
+        // Add more records here
+        {115, "Eve", 7.8}
+    };
+
+    bubbleSort(students, numStudents);
+
+    cout << "Roll Call List (Sorted by Roll Number):\n";
+    for (int i = 0; i < numStudents; i++) {
+        cout << "Roll No: " << students[i].rollNo << ", Name: " << students[i].name << ", SGPA: " << students[i].sgpa << "\n";
+    }
+
+    quickSort(students, 0, numStudents - 1);
+
+    cout << "\nTop 10 Toppers (Sorted by SGPA):\n";
+    for (int i = 0; i < min(10, numStudents); i++) {
+        cout << "Roll No: " << students[i].rollNo << ", Name: " << students[i].name << ", SGPA: " << students[i].sgpa << "\n";
+    }
+
+    return 0;
+}

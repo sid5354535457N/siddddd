@@ -1,0 +1,109 @@
+  /*   3 . Consider a student database of SEIT class (at least 15 records). Database contains
+different fields of every student like Roll No, Name and SGPA.(array of structure)
+a) Arrange list of students alphabetically. (Use Insertion sort)
+b) Search a particular student according to name using binary search without
+recursion. (all the student records having the presence of search key should be
+displayed)
+(Note: Implement either Bubble sort or Insertion Sort.)   */
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+struct Student {
+    int rollNo;
+    string name;
+    float sgpa;
+};
+
+void insertionSort(Student arr[], int n);
+
+void binarySearch(Student arr[], int n, const string& targetName);
+
+int main() {
+    // Example data with at least 15 records
+    Student students[] = {
+        {101, "Alice", 8.5},
+        {102, "Bob", 9.0},
+        {103, "Charlie", 7.8},
+        {104, "David", 8.2},
+        // Add more records here
+        // ...
+        {115, "Eve", 7.5}
+    };
+
+    int n = sizeof(students) / sizeof(students[0]);
+
+    insertionSort(students, n);
+
+    cout << "Students arranged alphabetically:" << endl;
+    for (int i = 0; i < n; i++) {
+        cout << "Roll No: " << students[i].rollNo
+             << ", Name: " << students[i].name
+             << ", SGPA: " << students[i].sgpa << endl;
+    }
+
+    string targetName;
+    cout << "\nEnter the name to search: ";
+    cin >> targetName;
+
+    binarySearch(students, n, targetName);
+
+    return 0;
+}
+
+void insertionSort(Student arr[], int n) {
+    for (int i = 1; i < n; i++) {
+        Student key = arr[i];
+        int j = i - 1;
+
+        while (j >= 0 && arr[j].name > key.name) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+
+        arr[j + 1] = key;
+    }
+}
+
+void binarySearch(Student arr[], int n, const string& targetName) {
+    int left = 0, right = n - 1;
+    bool found = false;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+
+        if (arr[mid].name == targetName) {
+            cout << "Student found - Roll No: " << arr[mid].rollNo
+                 << ", Name: " << arr[mid].name
+                 << ", SGPA: " << arr[mid].sgpa << endl;
+            found = true;
+
+            int i = mid - 1;
+            while (i >= 0 && arr[i].name == targetName) {
+                cout << "Roll No: " << arr[i].rollNo
+                     << ", Name: " << arr[i].name
+                     << ", SGPA: " << arr[i].sgpa << endl;
+                i--;
+            }
+
+            i = mid + 1;
+            while (i < n && arr[i].name == targetName) {
+                cout << "Roll No: " << arr[i].rollNo
+                     << ", Name: " << arr[i].name
+                     <<  " SGPA: " << arr[i].sgpa << endl;
+                i++;
+            }
+
+            break;
+        } else if (arr[mid].name < targetName) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+
+    if (!found) {
+        cout << "Student with name " << targetName << " not found." << endl;
+    }
+}

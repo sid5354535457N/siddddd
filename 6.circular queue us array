@@ -1,0 +1,109 @@
+/*6 Implement Circular Queue using Array. Perform following operations on it.
+a) Insertion (Enqueue)
+b) Deletion (Dequeue)
+c) Display
+(Note: Handle queue full condition by considering a fixed size of a queue.)*/
+#include <iostream>
+
+using namespace std;
+
+class CircularQueue {
+private:
+    int* arr;
+    int front, rear, size, capacity;
+
+public:
+    CircularQueue(int cap) {
+        capacity = cap;
+        arr = new int[capacity];
+        size = 0;
+        front = rear = -1;
+    }
+
+    bool isEmpty() {
+        return size == 0;
+    }
+
+    bool isFull() {
+        return size == capacity;
+    }
+
+    void enqueue(int value) {
+        if (isFull()) {
+            cout << "Queue is full. Cannot enqueue.\n";
+            return;
+        }
+
+        if (isEmpty()) {
+            front = rear = 0;
+        } else {
+            rear = (rear + 1) % capacity;
+        }
+
+        arr[rear] = value;
+        size++;
+
+        cout << "Enqueued: " << value << endl;
+    }
+
+    void dequeue() {
+        if (isEmpty()) {
+            cout << "Queue is empty. Cannot dequeue.\n";
+            return;
+        }
+
+        cout << "Dequeued: " << arr[front] << endl;
+
+        if (front == rear) {
+            front = rear = -1;
+        } else {
+            front = (front + 1) % capacity;
+        }
+
+        size--;
+    }
+
+    void display() {
+        if (isEmpty()) {
+            cout << "Queue is empty.\n";
+            return;
+        }
+
+        cout << "Queue elements: ";
+        int i = front;
+        do {
+            cout << arr[i] << " ";
+            i = (i + 1) % capacity;
+        } while (i != (rear + 1) % capacity);
+
+        cout << endl;
+    }
+
+    ~CircularQueue() {
+        delete[] arr;
+    }
+};
+
+int main() {
+    CircularQueue cq(5);
+
+    cq.enqueue(1);
+    cq.enqueue(2);
+    cq.enqueue(3);
+    cq.display();
+
+    cq.dequeue();
+    cq.display();
+
+    cq.enqueue(4);
+    cq.enqueue(5);
+    cq.enqueue(6);
+    cq.display();
+
+    cq.dequeue();
+    cq.dequeue();
+    cq.dequeue();
+    cq.display();
+
+    return 0;
+}
